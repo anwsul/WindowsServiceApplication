@@ -2,9 +2,9 @@
 
 > A service is a long-running executable that does not support a user interface, and which might not run under the logged-on user account.
 
-.NET Framework can be used to develop windows services. Unlike a Console application that we can just build and run, services need a little more work. If we were to just run the application directly (say, by double clicking it), it will throw an error.
+.NET Framework can be used to develop windows services. Unlike a Console application that we can just build and run however, services need a little more work. If we were to just run the application directly (say, by double clicking it), it will throw an error.
 
-To create a service, we first need to create a class that inherits from `System.Services.ServiceBase`. This base class, among other things, contains the signatures for the methods used to interact with a service (`OnStart`, `OnStop`...).
+To create a service, we first need to create a class that inherits from `System.ServiceProcess.ServiceBase`. This base class, among other things, contains the signatures for the methods used to interact with a service (`OnStart`, `OnStop`...).
 
 ```csharp
 class OurService : ServiceBase {
@@ -28,3 +28,12 @@ If we were to use `installutil`, we need additional steps, which means creating 
 if we were to use `sc` however, we just need to build our application without the extra installer class.
 
 The usage for both `sc` and `installutil` can be found by just running them on the terminal. Incase `installutil` throws an error saying it couldn't be found, make sure it is added in the list of path environment variables.
+
+
+The example in this repo contains a simple demonstration of a windows service that logs events every 5 seconds. It has two classes: the `Program` class found inside the `Program.cs` file, containing the entry point, `Main` method, and a class named `Service1`, found inside `Service1.cs` file, containing a single service.
+
+The constructor for our service sets the name of the service, and configures the [`EventLog`](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.eventlog?view=netframework-4.8) object, such as the source and the logname.
+
+Inside the `OnStart` handler, we created a new task that calls the `UpdateCount` method every 5 seconds. 
+
+When the `OnStop` method is called, we made sure our task is also stopped by calling the `Dispose` method.
